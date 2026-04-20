@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formação Impact Leader — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --green:#1a6b4a;--green-light:#2d9b6f;--green-pale:#e8f5ef;--green-mid:#c2e8d4;
+  --gold:#c9a84c;--dark:#0e1f17;--dark2:#1a2e23;--text:#1c2b22;--text2:#4a6355;
+  --text3:#7a9585;--border:#d4e6db;--bg:#f7fbf8;--white:#ffffff;
+  --radius:12px;--radius-lg:20px;--shadow:0 2px 16px rgba(26,107,74,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.site-header{background:var(--dark);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo-text{font-family:'Playfair Display',serif;color:#fff;font-size:18px;font-weight:600;}
+.logo-text span{color:var(--gold);}
+.header-badge{font-size:11px;color:#7a9585;letter-spacing:.1em;text-transform:uppercase;}
+.hero{background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 60%,#0f2d1e 100%);padding:60px 40px 50px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);}
+.hero-tag{display:inline-block;background:rgba(201,168,76,.15);color:var(--gold);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:20px;border:1px solid rgba(201,168,76,.3);margin-bottom:20px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);color:#fff;font-weight:700;line-height:1.2;margin-bottom:12px;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p{color:rgba(255,255,255,.55);font-size:15px;max-width:480px;margin:0 auto 28px;line-height:1.7;}
+.hero-stats{display:flex;justify-content:center;gap:32px;}
+.hstat-val{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);font-weight:700;display:block;}
+.hstat-lbl{font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;}
+.progress-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:16px 40px;position:sticky;top:57px;z-index:90;}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.progress-label{font-size:13px;font-weight:500;color:var(--text2);}
+.progress-pct{font-size:13px;font-weight:600;color:var(--green);}
+.progress-track{height:4px;background:var(--border);border-radius:2px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green) 0%,var(--green-light) 100%);border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.main{max-width:760px;margin:0 auto;padding:40px 24px 80px;}
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:24px;overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.section-header{background:var(--dark);padding:20px 28px;display:flex;align-items:center;gap:14px;}
+.section-num{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--dark);flex-shrink:0;}
+.section-title{font-family:'Playfair Display',serif;font-size:16px;color:#fff;font-weight:600;}
+.section-subtitle{font-size:12px;color:rgba(255,255,255,.45);margin-top:2px;}
+.section-body{padding:24px 28px;}
+.id-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:560px){.id-grid{grid-template-columns:1fr;}}
+.field-wrap{display:flex;flex-direction:column;gap:6px;}
+.field-label{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;}
+.field-input{padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s;}
+.field-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(26,107,74,.1);}
+.field-input.error{border-color:#e74c3c;}
+.question-item{padding:18px 0;border-bottom:1px solid var(--border);}
+.question-item:last-child{border-bottom:none;padding-bottom:0;}
+.question-item:first-child{padding-top:0;}
+.q-text{font-size:14px;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:14px;}
+.q-num{display:inline-block;background:var(--green-pale);color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;margin-right:6px;}
+.scale-wrap{display:flex;flex-direction:column;gap:8px;}
+.scale-btns{display:flex;gap:4px;}
+.scale-btn{flex:1;padding:10px 4px;border:1.5px solid var(--border);border-radius:8px;background:transparent;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;text-align:center;}
+.scale-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-pale);}
+.scale-btn.sel-low{background:#c0392b;border-color:#c0392b;color:#fff;font-weight:600;}
+.scale-btn.sel-mid{background:var(--gold);border-color:var(--gold);color:var(--dark);font-weight:600;}
+.scale-btn.sel-high{background:var(--green-light);border-color:var(--green-light);color:#fff;font-weight:600;}
+.scale-btn.sel-top{background:var(--green);border-color:var(--green);color:#fff;font-weight:600;}
+.scale-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);letter-spacing:.04em;padding:0 2px;}
+.orientation{background:var(--green-pale);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:20px;font-size:12px;color:var(--green);font-weight:500;}
+.submit-wrap{text-align:center;padding:32px 0 0;}
+.submit-btn{background:var(--green);color:#fff;border:none;padding:16px 48px;border-radius:var(--radius);font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;letter-spacing:.02em;box-shadow:0 4px 20px rgba(26,107,74,.3);}
+.submit-btn:hover{background:var(--green-light);transform:translateY(-1px);box-shadow:0 8px 28px rgba(26,107,74,.35);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-note{font-size:12px;color:var(--text3);margin-top:10px;}
+.error-banner{background:#fdf2f2;border:1px solid #f5c6c6;color:#c0392b;padding:12px 16px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:none;}
+
+/* sending overlay */
+.sending-overlay{display:none;position:fixed;inset:0;background:rgba(14,31,23,.85);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.sending-overlay.active{display:flex;}
+.spinner{width:48px;height:48px;border:3px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sending-txt{color:#fff;font-size:15px;font-weight:500;}
+
+/* RESULT */
+#result-page{display:none;}
+.result-hero{background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 100%);padding:50px 40px;text-align:center;}
+.result-hero h2{font-family:'Playfair Display',serif;font-size:32px;color:#fff;margin-bottom:8px;}
+.result-hero p{color:rgba(255,255,255,.55);font-size:15px;}
+.result-name{color:var(--gold);}
+.saved-badge{display:inline-block;background:rgba(45,155,111,.2);color:#2d9b6f;border:1px solid rgba(45,155,111,.4);font-size:12px;padding:5px 14px;border-radius:20px;margin-top:12px;}
+.result-main{max-width:760px;margin:0 auto;padding:32px 24px 80px;}
+.result-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+@media(max-width:560px){.result-overview{grid-template-columns:1fr 1fr;}}
+.ov-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 14px;text-align:center;box-shadow:var(--shadow);}
+.ov-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--green);display:block;}
+.ov-lbl{font-size:11px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+.radar-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px;box-shadow:var(--shadow);text-align:center;}
+.radar-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--text);margin-bottom:24px;}
+.dim-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:16px;box-shadow:var(--shadow);}
+.dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.dim-name{font-size:15px;font-weight:600;color:var(--text);}
+.dim-score-badge{font-size:18px;font-weight:700;font-family:'Playfair Display',serif;color:var(--green);}
+.dim-bar-track{height:8px;background:var(--border);border-radius:4px;margin-bottom:8px;overflow:hidden;}
+.dim-bar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.bar-low{background:#e74c3c;}.bar-mid{background:var(--gold);}.bar-high{background:var(--green-light);}.bar-top{background:var(--green);}
+.dim-status{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;}
+.status-low{color:#e74c3c;}.status-mid{color:#c9a84c;}.status-high{color:var(--green-light);}.status-top{color:var(--green);}
+.dq-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.dq-row:last-child{border-bottom:none;}
+.dq-text{color:var(--text2);flex:1;padding-right:12px;line-height:1.5;}
+.dq-val{font-weight:700;font-size:14px;min-width:28px;text-align:right;}
+.insight-card{background:var(--dark);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px;color:#fff;}
+.insight-card h3{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:16px;}
+.insight-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.insight-list li{font-size:14px;color:rgba(255,255,255,.75);padding-left:18px;position:relative;line-height:1.6;}
+.insight-list li::before{content:'→';position:absolute;left:0;color:var(--gold);font-size:12px;top:2px;}
+.pdf-btn{width:100%;padding:16px;background:var(--gold);color:var(--dark);border:none;border-radius:var(--radius);font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;letter-spacing:.02em;margin-bottom:12px;}
+.pdf-btn:hover{background:#b8943d;transform:translateY(-1px);}
+.new-btn{width:100%;padding:14px;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.new-btn:hover{background:var(--green-pale);border-color:var(--green);color:var(--green);}
+
+/* SHEETS CONFIG MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal-box{background:var(--white);border-radius:var(--radius-lg);padding:32px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal-box h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark);margin-bottom:8px;}
+.modal-box p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+.modal-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;margin-bottom:12px;}
+.modal-input:focus{border-color:var(--green);}
+.modal-save{background:var(--green);color:#fff;border:none;padding:12px 24px;border-radius:var(--radius);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;}
+.modal-save:hover{background:var(--green-light);}
+.modal-skip{background:transparent;color:var(--text3);border:none;font-size:13px;cursor:pointer;width:100%;margin-top:8px;font-family:'DM Sans',sans-serif;padding:8px;}
+.config-btn{position:fixed;bottom:24px;right:24px;background:var(--dark);color:var(--gold);border:1px solid rgba(201,168,76,.3);padding:10px 16px;border-radius:var(--radius);font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;z-index:50;letter-spacing:.05em;}
+
+@media(max-width:640px){
+  .site-header{padding:14px 20px;}
+  .hero{padding:40px 20px 36px;}
+  .progress-wrap{padding:12px 20px;}
+  .section-body{padding:18px 16px;}
+  .section-header{padding:16px 18px;}
+  .scale-btn{padding:8px 2px;font-size:12px;}
+  .result-hero{padding:36px 20px;}
+  .result-main{padding:24px 16px 60px;}
+  .dim-card,.radar-wrap,.insight-card{padding:18px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Sending overlay -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="spinner"></div>
+  <div class="sending-txt">Salvando suas respostas e gerando diagnóstico...</div>
+</div>
+
+<!-- Sheets config modal -->
+<div class="modal-overlay" id="config-modal">
+  <div class="modal-box">
+    <h3>Conectar ao Google Sheets</h3>
+    <p>Cole abaixo a URL do seu Google Apps Script (Web App). As respostas de todos os participantes serão salvas automaticamente na sua planilha.</p>
+    <input class="modal-input" id="sheets-url-input" type="text" placeholder="https://script.google.com/macros/s/XXXXXXXX/exec" />
+    <p style="font-size:11px;color:var(--text3);margin-bottom:12px;">A URL fica salva no navegador. Cada aluno que preencher precisará ter a URL configurada, ou você hospeda com a URL já embutida no HTML.</p>
+    <button class="modal-save" onclick="saveConfig()">Salvar e conectar</button>
+    <button class="modal-skip" onclick="closeConfig()">Pular por agora (só PDF)</button>
+  </div>
+</div>
+
+<button class="config-btn" onclick="openConfig()" title="Configurar Google Sheets">⚙ Sheets</button>
+
+<header class="site-header">
+  <div class="logo-text">Instituto da <span>Liderança</span></div>
+  <div class="header-badge">Formação Impact Leader</div>
+</header>
+
+<!-- FORM PAGE -->
+<div id="form-page">
+<div class="hero">
+  <div class="hero-tag">Onboarding Pré-Treinamento</div>
+  <h1>Formação<br><em>Impact Leader</em></h1>
+  <p>Diagnóstico inicial de autoavaliação — avalie onde você está hoje em 15 dimensões da liderança.</p>
+  <div class="hero-stats">
+    <div class="hstat"><span class="hstat-val">50</span><span class="hstat-lbl">Perguntas</span></div>
+    <div class="hstat"><span class="hstat-val">15</span><span class="hstat-lbl">Dimensões</span></div>
+    <div class="hstat"><span class="hstat-val">~8 min</span><span class="hstat-lbl">Duração</span></div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <span class="progress-label" id="prog-label">Identificação</span>
+    <span class="progress-pct" id="prog-pct">0%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<div class="main">
+  <div id="error-banner" class="error-banner"></div>
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">✦</div>
+      <div>
+        <div class="section-title">Identificação</div>
+        <div class="section-subtitle">Dados do participante</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="id-grid">
+        <div class="field-wrap"><label class="field-label">Nome completo *</label><input class="field-input" id="f-nome" type="text" placeholder="Seu nome completo"/></div>
+        <div class="field-wrap"><label class="field-label">Profissão *</label><input class="field-input" id="f-profissao" type="text" placeholder="Seu cargo ou profissão"/></div>
+        <div class="field-wrap"><label class="field-label">E-mail *</label><input class="field-input" id="f-email" type="email" placeholder="seu@email.com"/></div>
+        <div class="field-wrap"><label class="field-label">Telefone *</label><input class="field-input" id="f-tel" type="text" placeholder="(00) 00000-0000"/></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="questions-container"></div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitForm()">Gerar meu diagnóstico</button>
+    <div class="submit-note">Suas respostas serão salvas e seu relatório gerado automaticamente.</div>
+  </div>
+</div>
+</div><!-- /form-page -->
+
+<!-- RESULT PAGE -->
+<div id="result-page">
+  <div class="result-hero">
+    <h2>Seu Diagnóstico, <span class="result-name" id="r-nome">Líder</span></h2>
+    <p>Formação Impact Leader · <span id="r-data"></span></p>
+    <div class="saved-badge" id="saved-badge" style="display:none">✓ Respostas salvas no Google Sheets</div>
+  </div>
+  <div class="result-main">
+    <div class="result-overview" id="r-overview"></div>
+    <div class="radar-wrap">
+      <div class="radar-title">Radar de Competências — 15 Dimensões</div>
+      <canvas id="radarChart" width="520" height="420"></canvas>
+    </div>
+    <div id="r-dimensions"></div>
+    <div class="insight-card" id="r-insights"></div>
+    <button class="pdf-btn" onclick="generatePDF()">⬇ Baixar Relatório em PDF</button>
+    <button class="new-btn" onclick="resetForm()">Preencher novo formulário</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG — cole sua URL do Apps Script aqui para deploy fixo
+// ============================================================
+const FIXED_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzTKp64PJ5QGQqC5O2gVgSQ4ur8VW6Wrmxv79Qs4AOMEZ9ozUTTTTmDkb9QjFFkAviY9A/exec'; // ex: 'https://script.google.com/macros/s/XXXXX/exec'
+
+// ============================================================
+// SECTIONS DATA
+// ============================================================
+const SECTIONS = [
+  {id:'s1',title:'Objetivos alinhados com propósitos e prioridades',short:'Objetivos',num:'01',questions:['Até que ponto eu consigo: identificar e formular claramente meus objetivos?','Até que ponto eu consigo: identificar meus propósitos e prioridades?','Até que ponto eu consigo: alinhar meus propósitos e prioridades com meus objetivos?']},
+  {id:'s2',title:'Estratégias para atuação efetiva como Líder',short:'Estratégias',num:'02',questions:['Até que ponto eu consigo: identificar as ações necessárias para contribuir com o atingimento dos objetivos da organização?','Até que ponto eu consigo: elaborar um plano de ação viável e eficaz?']},
+  {id:'s3',title:'Colocar planos em ação e executá-los até o fim',short:'Execução',num:'03',questions:['De que modo eu avalio minha confiança e perseverança?','Eu sigo o planejamento até o fim?']},
+  {id:'s4',title:'Atingir objetivos organizacionais',short:'Resultados',num:'04',questions:['Eu costumo atingir os objetivos que tracei para contribuir com a organização?','Costumo persegui-los com foco e comprometimento?']},
+  {id:'s5',title:'Identificação e superação de bloqueios',short:'Bloqueios',num:'05',questions:['Até que ponto estou consciente de meu verdadeiro potencial?','Consigo identificar e superar bloqueios que me impedem de usar todo o meu potencial?']},
+  {id:'s6',title:'Administração do tempo',short:'Tempo',num:'06',questions:['Tenho tempo para fazer tudo o que preciso sem me estressar?','Tenho tempo para perseguir meus objetivos e prioridades?','Consigo equilibrar minha vida pessoal e profissional?']},
+  {id:'s7',title:'Lidar com suas próprias emoções e com a dos outros',short:'Int. Emocional',num:'07',questions:['Estou consciente de minhas próprias emoções e do modo como elas afetam meu comportamento?','Sei controlar minhas emoções?','Compreendo e sei como lidar com as emoções de outras pessoas?']},
+  {id:'s8',title:'Relacionamentos interpessoais',short:'Relacionamentos',num:'08',questions:['Estou satisfeito com meus relacionamentos pessoais e profissionais?','Sei construir relacionamentos saudáveis e produtivos?','Sei identificar e resolver problemas que possam afetar negativamente os meus relacionamentos?']},
+  {id:'s9',title:'Comunicação',short:'Comunicação',num:'09',questions:['Eu entendo a importância da comunicação em meu posicionamento profissional?','Consigo me comunicar com clareza e objetividade?','Sou capaz de me fazer entender quando me comunico?','Sei usar a comunicação para obter apoio, administrar conflitos e atingir meus objetivos?']},
+  {id:'s10',title:'Assertividade',short:'Assertividade',num:'10',questions:['Sou capaz de dizer não sem criar confrontos e conflitos desnecessários?','Consigo expressar claramente o que penso e sinto?','Sinto confiança e convicção quando me expresso?','Consigo me expressar com objetividade quando me sinto desrespeitado ou quando algo me desagrada?']},
+  {id:'s11',title:'Energia e motivação para agir',short:'Energia',num:'11',questions:['Costumo me sentir energizado e motivado com frequência?','Como você avalia seu grau de energia e motivação para superar dificuldades?','Como você avalia seu grau de energia e motivação para realizar suas atividades diárias e atingir seus objetivos?']},
+  {id:'s12',title:'Tomada de decisões',short:'Decisões',num:'12',questions:['Consigo entender clara e rapidamente a decisão que tenho de tomar e o objetivo que busco com isso?','Sou capaz de analisar diferentes opções de tomada de decisões?','Sou capaz de traçar um plano de ação mesmo sob pressão?','Percebo e avalio as consequências de cada decisão antes de tomá-las?']},
+  {id:'s13',title:'Progresso financeiro',short:'Financeiro',num:'13',questions:['Estou satisfeito com meu progresso financeiro?','Costumo estabelecer metas financeiras, planejar e atingir essas metas?','Costumo obter um saldo mensal positivo, isto é, ganhar mais do que gasto?']},
+  {id:'s14',title:'Iniciativa e proatividade',short:'Proatividade',num:'14',questions:['Eu costumo fazer mais do que é pedido?','Ofereço novas ideias?','Realizo ações para promover melhorias mesmo sem ser solicitado?','Sinto-me suficientemente confiante para usar o que tenho de melhor?','Contribuo ativamente para buscar e implantar soluções?','Gero melhorias e aumento resultados?','Demonstro espírito de liderança?']},
+  {id:'s15',title:'Resolução de problemas e administração de conflitos',short:'Conflitos',num:'15',questions:['Eu ajo rapidamente para resolver problemas?','Eu acumulo problemas ou sei como delegar o que deve ser delegado?','Sinto que estou sempre às voltas com os mesmos problemas e conflitos?','Consigo encontrar soluções eficazes e novas opções?','Conheço e utilizo técnicas de resolução de problemas e administração de conflitos?']}
+];
+
+const answers = {};
+let qCounter = 1;
+
+// ============================================================
+// CONFIG / SHEETS URL
+// ============================================================
+function getSheetsUrl() {
+  if(FIXED_SHEETS_URL) return FIXED_SHEETS_URL;
+  return localStorage.getItem('sheets_url') || '';
+}
+function saveConfig() {
+  const url = document.getElementById('sheets-url-input').value.trim();
+  if(url) { localStorage.setItem('sheets_url', url); }
+  closeConfig();
+  alert('URL salva! As próximas respostas serão enviadas ao Google Sheets.');
+}
+function openConfig() {
+  document.getElementById('sheets-url-input').value = getSheetsUrl();
+  document.getElementById('config-modal').classList.add('active');
+}
+function closeConfig() { document.getElementById('config-modal').classList.remove('active'); }
+
+// ============================================================
+// BUILD FORM
+// ============================================================
+function buildForm() {
+  const container = document.getElementById('questions-container');
+  SECTIONS.forEach(sec => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    let qsHTML = sec.questions.map(q => {
+      const qid = 'q'+qCounter; const num = qCounter; qCounter++;
+      return `<div class="question-item" id="wrap-${qid}">
+        <div class="q-text"><span class="q-num">${num}</span>${q}</div>
+        <div class="scale-wrap">
+          <div class="scale-btns" id="btns-${qid}">
+            ${[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="scale-btn" onclick="selectVal('${qid}',${v})">${v}</button>`).join('')}
+          </div>
+          <div class="scale-labels"><span>Não consigo</span><span>Consigo plenamente</span></div>
+        </div>
+      </div>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="section-header">
+        <div class="section-num">${sec.num}</div>
+        <div><div class="section-title">${sec.title}</div><div class="section-subtitle">Avalie de 0 a 10 os resultados que você vem obtendo</div></div>
+      </div>
+      <div class="section-body">
+        <div class="orientation">Orientação: de 0 a 10, avalie os resultados que você vem obtendo nos itens abaixo.</div>
+        ${qsHTML}
+      </div>`;
+    container.appendChild(card);
+  });
+  updateProgress();
+  // show config modal if no URL set
+  if(!getSheetsUrl()) { setTimeout(openConfig, 1200); }
+}
+
+function selectVal(qid, val) {
+  answers[qid] = val;
+  document.querySelectorAll(`#btns-${qid} .scale-btn`).forEach((b,i) => {
+    b.className = 'scale-btn';
+    if(i===val) b.classList.add(val<=3?'sel-low':val<=6?'sel-mid':val<=8?'sel-high':'sel-top');
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = Object.keys(answers).length;
+  const pct = Math.round((done/50)*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+  const idx = Math.min(Math.floor(done/50*15),14);
+  document.getElementById('prog-label').textContent = done===50?'Completo!':(SECTIONS[idx]?.short||'Preenchendo...');
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+async function submitForm() {
+  const nome=document.getElementById('f-nome').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  const prof=document.getElementById('f-profissao').value.trim();
+  let valid=true;
+  ['f-nome','f-email','f-tel','f-profissao'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el.value.trim()){el.classList.add('error');valid=false;}
+    else el.classList.remove('error');
+  });
+  const totalQ=Object.keys(answers).length;
+  if(totalQ<50) valid=false;
+  const banner=document.getElementById('error-banner');
+  if(!valid){
+    banner.style.display='block';
+    banner.textContent=totalQ<50?`Responda todas as perguntas. Faltam ${50-totalQ} respostas.`:'Preencha todos os dados de identificação.';
+    banner.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  banner.style.display='none';
+
+  // Calculate scores
+  let qIdx=1;
+  const sectionScores=SECTIONS.map(sec=>{
+    const vals=sec.questions.map((_,i)=>answers[`q${qIdx+i}`]??0);
+    qIdx+=sec.questions.length;
+    const avg=Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10;
+    return {...sec,avg,vals};
+  });
+  const globalAvg=Math.round((sectionScores.reduce((a,s)=>a+s.avg,0)/sectionScores.length)*10)/10;
+  const nivel=globalAvg>=8?'Avançado':globalAvg>=6?'Consolidado':globalAvg>=4?'Em desenvolvimento':'Iniciante';
+
+  // Show overlay
+  document.getElementById('sending-overlay').classList.add('active');
+
+  // Send to Sheets
+  const sheetsUrl=getSheetsUrl();
+  let savedToSheets=false;
+  if(sheetsUrl) {
+    try {
+      await fetch(sheetsUrl, {
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({nome,email,tel,prof,answers,globalAvg,nivel,sectionScores:sectionScores.map(s=>({id:s.id,short:s.short,avg:s.avg}))})
+      });
+      savedToSheets=true;
+    } catch(err){ console.warn('Sheets error:',err); }
+  }
+
+  await new Promise(r=>setTimeout(r,1200));
+  document.getElementById('sending-overlay').classList.remove('active');
+  buildResult({nome,email,tel,prof},sectionScores,globalAvg,nivel,savedToSheets);
+}
+
+// ============================================================
+// RESULT
+// ============================================================
+function buildResult(user,sectionScores,globalAvg,nivel,savedToSheets) {
+  document.getElementById('form-page').style.display='none';
+  document.getElementById('result-page').style.display='block';
+  document.getElementById('r-nome').textContent=user.nome.split(' ')[0];
+  document.getElementById('r-data').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  if(savedToSheets){ document.getElementById('saved-badge').style.display='inline-block'; }
+
+  const lowest=[...sectionScores].sort((a,b)=>a.avg-b.avg).slice(0,3);
+  const highest=[...sectionScores].sort((a,b)=>b.avg-a.avg).slice(0,1);
+
+  document.getElementById('r-overview').innerHTML=`
+    <div class="ov-card"><span class="ov-val">${globalAvg.toFixed(1)}</span><div class="ov-lbl">Média geral</div></div>
+    <div class="ov-card"><span class="ov-val">${nivel}</span><div class="ov-lbl">Nível</div></div>
+    <div class="ov-card"><span class="ov-val">${lowest[0].short}</span><div class="ov-lbl">Foco prioritário</div></div>`;
+
+  drawRadar(sectionScores);
+
+  const dimDiv=document.getElementById('r-dimensions');
+  dimDiv.innerHTML='';
+  sectionScores.forEach(sec=>{
+    const bc=sec.avg>=8?'bar-top':sec.avg>=6?'bar-high':sec.avg>=4?'bar-mid':'bar-low';
+    const sc=sec.avg>=8?'status-top':sec.avg>=6?'status-high':sec.avg>=4?'status-mid':'status-low';
+    const st=sec.avg>=8?'Excelente':sec.avg>=6?'Bom':sec.avg>=4?'Atenção':'Crítico';
+    const qRows=sec.questions.map((q,i)=>{
+      const v=sec.vals[i];
+      const c=v>=8?'#1a6b4a':v>=6?'#2d9b6f':v>=4?'#c9a84c':'#e74c3c';
+      return `<div class="dq-row"><span class="dq-text">${q}</span><span class="dq-val" style="color:${c}">${v}</span></div>`;
+    }).join('');
+    dimDiv.innerHTML+=`
+      <div class="dim-card">
+        <div class="dim-header"><div class="dim-name">${sec.num}. ${sec.short}</div><div class="dim-score-badge">${sec.avg.toFixed(1)}</div></div>
+        <div class="dim-bar-track"><div class="dim-bar-fill ${bc}" style="width:${sec.avg*10}%"></div></div>
+        <div class="dim-status ${sc}">${st}</div>
+        <div class="dim-questions">${qRows}</div>
+      </div>`;
+  });
+
+  document.getElementById('r-insights').innerHTML=`
+    <h3>Insights Personalizados</h3>
+    <ul class="insight-list">
+      <li>Maior força: <strong>${highest[0].short}</strong> (${highest[0].avg.toFixed(1)}/10) — use como alavanca nas relações de liderança.</li>
+      <li>Prioridade de desenvolvimento: <strong>${lowest[0].short}</strong> (${lowest[0].avg.toFixed(1)}/10) — esta dimensão está impactando seu desempenho global.</li>
+      <li>Média geral de <strong>${globalAvg.toFixed(1)}/10</strong> = nível <strong>${nivel}</strong>. A formação Impact Leader irá elevar cada dimensão mapeada.</li>
+      <li>Top 3 dimensões para foco: <strong>${lowest.map(s=>s.short).join(', ')}</strong>.</li>
+      <li>Este diagnóstico será revisitado ao final da formação para medir evolução real obtida.</li>
+    </ul>`;
+
+  window._resultData={user,sectionScores,globalAvg,nivel};
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============================================================
+// RADAR
+// ============================================================
+function drawRadar(sections) {
+  const canvas=document.getElementById('radarChart');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+  const r=Math.min(W,H)*0.34;
+  const N=sections.length;
+  ctx.clearRect(0,0,W,H);
+  for(let g=1;g<=5;g++){
+    ctx.beginPath();
+    for(let i=0;i<N;i++){
+      const a=(i/N)*Math.PI*2-Math.PI/2,gr=r*(g/5);
+      i===0?ctx.moveTo(cx+gr*Math.cos(a),cy+gr*Math.sin(a)):ctx.lineTo(cx+gr*Math.cos(a),cy+gr*Math.sin(a));
+    }
+    ctx.closePath();ctx.strokeStyle='rgba(26,107,74,.13)';ctx.lineWidth=1;ctx.stroke();
+  }
+  for(let i=0;i<N;i++){
+    const a=(i/N)*Math.PI*2-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+    ctx.strokeStyle='rgba(26,107,74,.15)';ctx.lineWidth=1;ctx.stroke();
+  }
+  ctx.beginPath();
+  sections.forEach((sec,i)=>{
+    const a=(i/N)*Math.PI*2-Math.PI/2,rv=r*(sec.avg/10);
+    i===0?ctx.moveTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a)):ctx.lineTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a));
+  });
+  ctx.closePath();ctx.fillStyle='rgba(26,107,74,.18)';ctx.fill();ctx.strokeStyle='#1a6b4a';ctx.lineWidth=2.5;ctx.stroke();
+  sections.forEach((sec,i)=>{
+    const a=(i/N)*Math.PI*2-Math.PI/2,rv=r*(sec.avg/10);
+    ctx.beginPath();ctx.arc(cx+rv*Math.cos(a),cy+rv*Math.sin(a),4,0,Math.PI*2);ctx.fillStyle='#1a6b4a';ctx.fill();
+  });
+  ctx.fillStyle='#1c2b22';ctx.font='500 9px DM Sans,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  sections.forEach((sec,i)=>{
+    const a=(i/N)*Math.PI*2-Math.PI/2,lr=r+30;
+    ctx.fillText(sec.short,cx+lr*Math.cos(a),cy+lr*Math.sin(a));
+  });
+}
+
+// ============================================================
+// PDF
+// ============================================================
+function generatePDF() {
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const {user,sectionScores,globalAvg,nivel}=window._resultData;
+  const margin=18,usableW=210-margin*2;
+  let y=0;
+  function checkPage(n){if(y+n>270){doc.addPage();y=20;}}
+
+  doc.setFillColor(14,31,23);doc.rect(0,0,210,40,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(201,168,76);doc.text('Instituto da Liderança',margin,16);
+  doc.setFontSize(11);doc.setTextColor(255,255,255);doc.text('Formação Impact Leader — Diagnóstico de Onboarding',margin,25);
+  doc.setFontSize(9);doc.setTextColor(160,190,175);doc.text(`${user.nome}  ·  ${user.prof}  ·  ${new Date().toLocaleDateString('pt-BR')}`,margin,33);
+  y=52;
+
+  doc.setFillColor(232,245,239);doc.rect(margin,y-4,usableW,24,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(26,107,74);doc.text('PARTICIPANTE',margin+4,y+2);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(30,43,34);
+  doc.text(`${user.nome}`,margin+4,y+9);
+  doc.text(`${user.prof}  |  ${user.email}  |  ${user.tel}`,margin+4,y+15);
+  y+=32;
+
+  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(14,31,23);doc.text('RESULTADO GLOBAL',margin,y);y+=8;
+  [['Média Geral',globalAvg.toFixed(1)+'/10'],['Nível',nivel],['Dimensões','15 avaliadas']].forEach((c,i)=>{
+    const x=margin+i*(usableW/3);
+    doc.setFillColor(26,107,74);doc.rect(x,y,usableW/3-4,18,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(255,255,255);doc.text(c[1],x+(usableW/3-4)/2,y+8,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,230,210);doc.text(c[0],x+(usableW/3-4)/2,y+14,{align:'center'});
+  });
+  y+=28;
+
+  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(14,31,23);doc.text('DIAGNÓSTICO POR DIMENSÃO',margin,y);y+=8;
+  sectionScores.forEach(sec=>{
+    checkPage(20);
+    const col=sec.avg>=8?[26,107,74]:sec.avg>=6?[45,155,111]:sec.avg>=4?[201,168,76]:[231,76,60];
+    const st=sec.avg>=8?'Excelente':sec.avg>=6?'Bom':sec.avg>=4?'Atenção':'Crítico';
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(30,43,34);doc.text(`${sec.num}. ${sec.short}`,margin,y+4);
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(col[0],col[1],col[2]);doc.text(st,margin+55,y+4);
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(col[0],col[1],col[2]);doc.text(sec.avg.toFixed(1),margin+usableW,y+4,{align:'right'});
+    doc.setFillColor(220,235,227);doc.rect(margin,y+6,usableW*0.65,5,'F');
+    doc.setFillColor(col[0],col[1],col[2]);doc.rect(margin,y+6,usableW*0.65*(sec.avg/10),5,'F');
+    y+=18;
+  });
+  y+=4;
+
+  checkPage(55);
+  doc.setFillColor(14,31,23);doc.rect(margin,y,usableW,9,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(201,168,76);doc.text('INSIGHTS PERSONALIZADOS',margin+4,y+6);
+  y+=15;
+  const lo=[...sectionScores].sort((a,b)=>a.avg-b.avg).slice(0,3);
+  const hi=[...sectionScores].sort((a,b)=>b.avg-a.avg)[0];
+  [`Maior força: ${hi.short} (${hi.avg.toFixed(1)}/10) — use como alavanca na liderança.`,
+   `Prioridade de desenvolvimento: ${lo[0].short} (${lo[0].avg.toFixed(1)}/10).`,
+   `Top 3 dimensões para foco: ${lo.map(s=>s.short).join(', ')}.`,
+   `Média ${globalAvg.toFixed(1)}/10 = nível ${nivel}. A formação irá elevar cada dimensão.`
+  ].forEach(ins=>{
+    checkPage(10);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(50,70,60);
+    doc.text('→ '+ins,margin+3,y);y+=8;
+  });
+
+  for(let p=1;p<=doc.getNumberOfPages();p++){
+    doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(150,170,160);
+    doc.text(`Instituto da Liderança · Formação Impact Leader · Página ${p} de ${doc.getNumberOfPages()}`,105,290,{align:'center'});
+  }
+  doc.save(`diagnostico-impact-leader-${user.nome.split(' ')[0].toLowerCase()}.pdf`);
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetForm(){
+  Object.keys(answers).forEach(k=>delete answers[k]);
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('form-page').style.display='block';
+  ['f-nome','f-email','f-tel','f-profissao'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.scale-btn').forEach(b=>b.className='scale-btn');
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildForm();
+</script>
+</body>
+</html>
