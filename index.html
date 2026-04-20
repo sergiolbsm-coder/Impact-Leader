@@ -151,18 +151,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <!-- Sheets config modal -->
-<div class="modal-overlay" id="config-modal">
-  <div class="modal-box">
-    <h3>Conectar ao Google Sheets</h3>
-    <p>Cole abaixo a URL do seu Google Apps Script (Web App). As respostas de todos os participantes serão salvas automaticamente na sua planilha.</p>
-    <input class="modal-input" id="sheets-url-input" type="text" placeholder="https://script.google.com/macros/s/XXXXXXXX/exec" />
-    <p style="font-size:11px;color:var(--text3);margin-bottom:12px;">A URL fica salva no navegador. Cada aluno que preencher precisará ter a URL configurada, ou você hospeda com a URL já embutida no HTML.</p>
-    <button class="modal-save" onclick="saveConfig()">Salvar e conectar</button>
-    <button class="modal-skip" onclick="closeConfig()">Pular por agora (só PDF)</button>
-  </div>
-</div>
-
-<button class="config-btn" onclick="openConfig()" title="Configurar Google Sheets">⚙ Sheets</button>
 
 <header class="site-header">
   <div class="logo-text">Instituto da <span>Liderança</span></div>
