@@ -196,6 +196,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="field-wrap"><label class="field-label">Profissão *</label><input class="field-input" id="f-profissao" type="text" placeholder="Seu cargo ou profissão"/></div>
         <div class="field-wrap"><label class="field-label">E-mail *</label><input class="field-input" id="f-email" type="email" placeholder="seu@email.com"/></div>
         <div class="field-wrap"><label class="field-label">Telefone *</label><input class="field-input" id="f-tel" type="text" placeholder="(00) 00000-0000"/></div>
+        <div class="field-wrap"><label class="field-label">Empresa *</label><input class="field-input" id="f-empresa" type="text" placeholder="Nome da sua empresa"/></div>
+        <div class="field-wrap"><label class="field-label">Momento *</label>
+          <select class="field-input" id="f-momento">
+            <option value="">Selecione o momento...</option>
+            <option value="Pré-treinamento">Pré-treinamento</option>
+            <option value="Durante o treinamento">Durante o treinamento</option>
+            <option value="Pós-treinamento">Pós-treinamento</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -233,7 +242,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 // ============================================================
 // CONFIG — cole sua URL do Apps Script aqui para deploy fixo
 // ============================================================
-const FIXED_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx1Es4p-gPM-IBslNM2LaWGa3NcVFWSMeYWglTx9FrjxvtKIEs8cc48YbdiuYXchd_1gQ/exec'; // ex: 'https://script.google.com/macros/s/XXXXX/exec'
+const FIXED_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby7hkLl8SYNEj08g5YeV06Rm-hGK3h3iyA0rHvM1G7mRCri_vzXJ1Fu-iqVOZEkBjB2uQ/exec'; // ex: 'https://script.google.com/macros/s/XXXXX/exec'
 
 // ============================================================
 // SECTIONS DATA
@@ -340,8 +349,10 @@ async function submitForm() {
   const email=document.getElementById('f-email').value.trim();
   const tel=document.getElementById('f-tel').value.trim();
   const prof=document.getElementById('f-profissao').value.trim();
+  const empresa=document.getElementById('f-empresa').value.trim();
+  const momento=document.getElementById('f-momento').value.trim();
   let valid=true;
-  ['f-nome','f-email','f-tel','f-profissao'].forEach(id=>{
+  ['f-nome','f-email','f-tel','f-profissao','f-empresa','f-momento'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el.value.trim()){el.classList.add('error');valid=false;}
     else el.classList.remove('error');
@@ -380,7 +391,7 @@ async function submitForm() {
         method:'POST',
         mode:'no-cors',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({nome,email,tel,prof,answers,globalAvg,nivel,sectionScores:sectionScores.map(s=>({id:s.id,short:s.short,avg:s.avg}))})
+        body:JSON.stringify({nome,email,tel,prof,empresa,momento,answers,globalAvg,nivel,sectionScores:sectionScores.map(s=>({id:s.id,short:s.short,avg:s.avg}))})
       });
       savedToSheets=true;
     } catch(err){ console.warn('Sheets error:',err); }
@@ -388,7 +399,7 @@ async function submitForm() {
 
   await new Promise(r=>setTimeout(r,1200));
   document.getElementById('sending-overlay').classList.remove('active');
-  buildResult({nome,email,tel,prof},sectionScores,globalAvg,nivel,savedToSheets);
+  buildResult({nome,email,tel,prof,empresa,momento},sectionScores,globalAvg,nivel,savedToSheets);
 }
 
 // ============================================================
@@ -562,7 +573,8 @@ function resetForm(){
   Object.keys(answers).forEach(k=>delete answers[k]);
   document.getElementById('result-page').style.display='none';
   document.getElementById('form-page').style.display='block';
-  ['f-nome','f-email','f-tel','f-profissao'].forEach(id=>document.getElementById(id).value='');
+  ['f-nome','f-email','f-tel','f-profissao','f-empresa'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-momento').value='';
   document.querySelectorAll('.scale-btn').forEach(b=>b.className='scale-btn');
   updateProgress();
   window.scrollTo({top:0,behavior:'smooth'});
