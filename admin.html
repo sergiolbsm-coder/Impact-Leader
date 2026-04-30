@@ -599,6 +599,23 @@
   <a href="index.html">Formulário de Avaliação</a>
 </footer>
 
+<!-- DELETE MODAL -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center">
+  <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:1.75rem;max-width:400px;width:90%;text-align:center">
+    <div style="font-size:2rem;margin-bottom:0.75rem">🗑️</div>
+    <div style="font-size:1rem;font-weight:600;color:#e8e8e8;margin-bottom:0.5rem">Remover respondente?</div>
+    <div style="font-size:0.83rem;color:#888;margin-bottom:1.25rem;line-height:1.6">
+      <strong id="deleteModalName" style="color:#e8e8e8"></strong><br>
+      <span id="deleteModalEmail"></span><br><br>
+      Esta ação <strong style="color:#e74c3c">não pode ser desfeita</strong>. O registro será removido da planilha.
+    </div>
+    <div style="display:flex;gap:0.75rem;justify-content:center">
+      <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancelar</button>
+      <button id="deleteBtnConfirm" class="btn btn-sm" style="background:#e74c3c;color:#fff;padding:0.5rem 1.25rem" onclick="doDelete()">Sim, remover</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -630,10 +647,31 @@ const FIELD_CANDIDATES = {
   email:     ['E-mail','email','Email','e-mail'],
   tel:       ['Telefone','tel','Tel','telefone','phone'],
   prof:      ['Profissão','prof','Prof','profissao','profession'],
+  empresa:   ['Empresa','empresa','company','Company'],
+  momento:   ['Momento','momento','stage','Stage'],
   globalAvg: ['Score Global','globalAvg','Média Global','media','score'],
   nivel:     ['Nível','nivel','Nivel','level'],
   timestamp: ['Data/Hora','timestamp','data','Data','Carimbo de data/hora'],
 };
+
+// Perguntas completas por seção (para PDF de respostas)
+const SECTIONS_QUESTIONS = [
+  {id:'s1', short:'Objetivos', questions:['Até que ponto eu consigo: identificar e formular claramente meus objetivos?','Até que ponto eu consigo: identificar meus propósitos e prioridades?','Até que ponto eu consigo: alinhar meus propósitos e prioridades com meus objetivos?']},
+  {id:'s2', short:'Estratégias', questions:['Até que ponto eu consigo: identificar as ações necessárias para contribuir com o atingimento dos objetivos da organização?','Até que ponto eu consigo: elaborar um plano de ação viável e eficaz?']},
+  {id:'s3', short:'Execução', questions:['De que modo eu avalio minha confiança e perseverança?','Eu sigo o planejamento até o fim?']},
+  {id:'s4', short:'Resultados', questions:['Eu costumo atingir os objetivos que tracei para contribuir com a organização?','Costumo persegui-los com foco e comprometimento?']},
+  {id:'s5', short:'Bloqueios', questions:['Até que ponto estou consciente de meu verdadeiro potencial?','Consigo identificar e superar bloqueios que me impedem de usar todo o meu potencial?']},
+  {id:'s6', short:'Tempo', questions:['Tenho tempo para fazer tudo o que preciso sem me estressar?','Tenho tempo para perseguir meus objetivos e prioridades?','Consigo equilibrar minha vida pessoal e profissional?']},
+  {id:'s7', short:'Int. Emocional', questions:['Estou consciente de minhas próprias emoções e do modo como elas afetam meu comportamento?','Sei controlar minhas emoções?','Compreendo e sei como lidar com as emoções de outras pessoas?']},
+  {id:'s8', short:'Relacionamentos', questions:['Estou satisfeito com meus relacionamentos pessoais e profissionais?','Sei construir relacionamentos saudáveis e produtivos?','Sei identificar e resolver problemas que possam afetar negativamente os meus relacionamentos?']},
+  {id:'s9', short:'Comunicação', questions:['Eu entendo a importância da comunicação em meu posicionamento profissional?','Consigo me comunicar com clareza e objetividade?','Sou capaz de me fazer entender quando me comunico?','Sei usar a comunicação para obter apoio, administrar conflitos e atingir meus objetivos?']},
+  {id:'s10', short:'Assertividade', questions:['Sou capaz de dizer não sem criar confrontos e conflitos desnecessários?','Consigo expressar claramente o que penso e sinto?','Sinto confiança e convicção quando me expresso?','Consigo me expressar com objetividade quando me sinto desrespeitado ou quando algo me desagrada?']},
+  {id:'s11', short:'Energia', questions:['Costumo me sentir energizado e motivado com frequência?','Como você avalia seu grau de energia e motivação para superar dificuldades?','Como você avalia seu grau de energia e motivação para realizar suas atividades diárias e atingir seus objetivos?']},
+  {id:'s12', short:'Decisões', questions:['Consigo entender clara e rapidamente a decisão que tenho de tomar e o objetivo que busco com isso?','Sou capaz de analisar diferentes opções de tomada de decisões?','Sou capaz de traçar um plano de ação mesmo sob pressão?','Percebo e avalio as consequências de cada decisão antes de tomá-las?']},
+  {id:'s13', short:'Financeiro', questions:['Estou satisfeito com meu progresso financeiro?','Costumo estabelecer metas financeiras, planejar e atingir essas metas?','Costumo obter um saldo mensal positivo, isto é, ganhar mais do que gasto?']},
+  {id:'s14', short:'Proatividade', questions:['Eu costumo fazer mais do que é pedido?','Ofereço novas ideias?','Realizo ações para promover melhorias mesmo sem ser solicitado?','Sinto-me suficientemente confiante para usar o que tenho de melhor?','Contribuo ativamente para buscar e implantar soluções?','Gero melhorias e aumento resultados?','Demonstro espírito de liderança?']},
+  {id:'s15', short:'Conflitos', questions:['Eu ajo rapidamente para resolver problemas?','Eu acumulo problemas ou sei como delegar o que deve ser delegado?','Sinto que estou sempre às voltas com os mesmos problemas e conflitos?','Consigo encontrar soluções eficazes e novas opções?','Conheço e utilizo técnicas de resolução de problemas e administração de conflitos?']},
+];
 
 /* ─────────────────────────────────────────────────
    ESTADO
@@ -722,11 +760,13 @@ function getSectionAvg(row, sec) {
 }
 
 function parseRow(raw) {
-  const nome  = getField(raw, 'nome')  || '—';
-  const email = getField(raw, 'email') || '—';
-  const telRaw = getField(raw, 'tel');
-  const tel = telRaw !== null ? String(telRaw) : '—';
-  const prof  = getField(raw, 'prof')  || '—';
+  const nome    = getField(raw, 'nome')    || '—';
+  const email   = getField(raw, 'email')   || '—';
+  const telRaw  = getField(raw, 'tel');
+  const tel     = telRaw !== null ? String(telRaw) : '—';
+  const prof    = getField(raw, 'prof')    || '—';
+  const empresa = getField(raw, 'empresa') || '—';
+  const momento = getField(raw, 'momento') || '—';
 
   const avgRaw = getField(raw, 'globalAvg');
   const globalAvg = avgRaw !== null ? parseFloat(avgRaw) : null;
@@ -754,7 +794,7 @@ function parseRow(raw) {
     avg: getSectionAvg(raw, s),
   }));
 
-  return { nome, email, tel, prof, globalAvg, nivel, timestamp: ts, sectionScores };
+  return { nome, email, tel, prof, empresa, momento, globalAvg, nivel, timestamp: ts, sectionScores, _raw: raw };
 }
 
 /* ─────────────────────────────────────────────────
@@ -919,20 +959,26 @@ function renderTable() {
       <thead><tr>
         <th>#</th>
         ${thSort('nome','Nome')}
+        ${thSort('empresa','Empresa')}
         ${thSort('prof','Profissão')}
+        ${thSort('momento','Momento')}
         <th>E-mail</th>
         <th>Telefone</th>
         ${thSort('timestamp','Data')}
         ${thSort('globalAvg','Score')}
         ${thSort('nivel','Nível')}
         ${visSecs.map(s => `<th title="${s.title}" style="min-width:68px">${s.short}</th>`).join('')}
-        <th style="width:70px">PDF</th>
+        <th style="width:130px">Ações</th>
       </tr></thead>
       <tbody>`;
 
   filtered.forEach((r, i) => {
     const color = scoreColor(r.globalAvg);
     const fillW = r.globalAvg !== null ? Math.max(0, r.globalAvg * 10) : 0;
+
+    const momentoBadge = r.momento !== '—'
+      ? `<span style="font-size:0.68rem;padding:0.15rem 0.5rem;border-radius:20px;background:rgba(241,196,15,0.12);color:#f1c40f">${esc(r.momento)}</span>`
+      : '<span class="td-muted">—</span>';
 
     const secCells = visSecs.map(s => {
       const sc = r.sectionScores.find(x => x.id === s.id);
@@ -944,7 +990,9 @@ function renderTable() {
       <tr>
         <td class="td-num">${i + 1}</td>
         <td class="td-name">${esc(r.nome)}</td>
+        <td class="td-muted">${esc(r.empresa)}</td>
         <td class="td-muted">${esc(r.prof)}</td>
+        <td>${momentoBadge}</td>
         <td class="td-muted">${esc(r.email)}</td>
         <td class="td-muted">${esc(r.tel)}</td>
         <td class="td-muted" style="font-size:0.75rem">${esc(r.timestamp)}</td>
@@ -956,7 +1004,11 @@ function renderTable() {
         </td>
         <td><span class="badge ${nivelClass(r.nivel)}">${esc(r.nivel || '—')}</span></td>
         ${secCells}
-        <td><button class="btn btn-pdf btn-sm" onclick="generatePDF(${i})">📄 PDF</button></td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-pdf btn-sm" onclick="generatePDF(${i})" title="Relatório de scores">📊</button>
+          <button class="btn btn-secondary btn-sm" onclick="generateAnswersPDF(${i})" title="PDF com perguntas e respostas">📝</button>
+          <button class="btn btn-sm" style="background:rgba(231,76,60,0.12);color:#e74c3c;border:1px solid rgba(231,76,60,0.25)" onclick="confirmDelete(${i})" title="Remover respondente">🗑️</button>
+        </td>
       </tr>`;
   });
 
@@ -968,11 +1020,11 @@ function renderTable() {
    EXPORT EXCEL / CSV
 ───────────────────────────────────────────────── */
 function buildRows() {
-  const headers = ['Data','Nome','E-mail','Telefone','Profissão','Score Global','Nível',
+  const headers = ['Data','Nome','Empresa','Profissão','Momento','E-mail','Telefone','Score Global','Nível',
     ...SECTIONS.map(s => s.short)];
 
   const rows = filtered.map(r => [
-    r.timestamp, r.nome, r.email, r.tel, r.prof,
+    r.timestamp, r.nome, r.empresa, r.prof, r.momento, r.email, r.tel,
     r.globalAvg !== null ? r.globalAvg : '',
     r.nivel,
     ...SECTIONS.map(s => {
@@ -981,6 +1033,176 @@ function buildRows() {
     }),
   ]);
   return [headers, ...rows];
+}
+
+/* ─────────────────────────────────────────────────
+   DELETE
+───────────────────────────────────────────────── */
+function confirmDelete(idx) {
+  const r = filtered[idx];
+  if (!r) return;
+  const modal = document.getElementById('deleteModal');
+  document.getElementById('deleteModalName').textContent = r.nome;
+  document.getElementById('deleteModalEmail').textContent = r.email;
+  modal.dataset.idx = idx;
+  modal.style.display = 'flex';
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').style.display = 'none';
+}
+
+async function doDelete() {
+  const modal = document.getElementById('deleteModal');
+  const idx = parseInt(modal.dataset.idx);
+  const r = filtered[idx];
+  if (!r) return;
+
+  const btn = document.getElementById('deleteBtnConfirm');
+  btn.disabled = true;
+  btn.textContent = 'Removendo…';
+
+  const url = document.getElementById('sheetsUrl').value.trim();
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action: 'delete', timestamp: r.timestamp, email: r.email}),
+    });
+    // Remove locally and refresh
+    allData = allData.filter(d => !(d.timestamp === r.timestamp && d.email === r.email));
+    closeDeleteModal();
+    renderStats();
+    applyFilters();
+    setStatus('ok', `${allData.length} respondente${allData.length !== 1 ? 's' : ''} carregado${allData.length !== 1 ? 's' : ''}`);
+  } catch (err) {
+    alert('Erro ao remover: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sim, remover';
+  }
+}
+
+/* ─────────────────────────────────────────────────
+   PDF DE RESPOSTAS (perguntas + notas)
+───────────────────────────────────────────────── */
+function generateAnswersPDF(idx) {
+  const r = filtered[idx];
+  if (!r) return;
+
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({orientation: 'portrait', unit: 'mm', format: 'a4'});
+  const PW = 210, M = 14;
+  let y = 0;
+  let pageNum = 1;
+
+  const rgb  = hex => [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
+  const fill  = hex => doc.setFillColor(...rgb(hex));
+  const font  = (style, size) => { doc.setFont('helvetica', style); doc.setFontSize(size); };
+  const tcolor = hex => doc.setTextColor(...rgb(hex));
+  const txt   = (s, x, yy, opts) => doc.text(String(s ?? ''), x, yy, opts || {});
+  const sHex  = v => v == null ? '#555555' : v >= 8 ? '#2ecc71' : v >= 6 ? '#3498db' : v >= 4 ? '#f1c40f' : '#e74c3c';
+
+  function addHeader() {
+    fill('#0a0a0a'); doc.rect(0, 0, PW, 44, 'F');
+    fill('#2ecc71'); doc.rect(0, 0, 4, 44, 'F');
+    font('bold', 16); tcolor('#2ecc71');
+    txt('RESPOSTAS DO DIAGNÓSTICO', M + 5, 13);
+    font('normal', 8); tcolor('#aaaaaa');
+    txt('Impact Leader · Instituto da Liderança', M + 5, 20);
+    doc.setDrawColor(50,50,50); doc.setLineWidth(0.3);
+    doc.line(M + 5, 24, PW - M, 24);
+    font('bold', 11); tcolor('#f0f0f0');
+    txt(r.nome, M + 5, 31);
+    font('normal', 7.5); tcolor('#999999');
+    const info = [r.empresa, r.prof, r.momento].filter(v => v && v !== '—').join('  ·  ');
+    txt(info, M + 5, 37);
+    font('normal', 7); tcolor('#666666');
+    txt(`Data: ${r.timestamp}`, PW - M, 37, {align: 'right'});
+    y = 50;
+  }
+
+  function checkPage(needed) {
+    if (y + needed > 282) {
+      // Footer
+      font('normal', 6); tcolor('#555555');
+      txt(`Pág. ${pageNum}`, PW - M, 291, {align: 'right'});
+      doc.addPage();
+      pageNum++;
+      // Mini header on continuation pages
+      fill('#0a0a0a'); doc.rect(0, 0, PW, 14, 'F');
+      fill('#2ecc71'); doc.rect(0, 0, 4, 14, 'F');
+      font('bold', 8); tcolor('#2ecc71');
+      txt('IMPACT LEADER · RESPOSTAS', M + 5, 9);
+      font('normal', 7); tcolor('#888888');
+      txt(r.nome, PW - M, 9, {align: 'right'});
+      y = 20;
+    }
+  }
+
+  addHeader();
+
+  // Build full question list with answers
+  let qIdx = 1;
+  SECTIONS_QUESTIONS.forEach(sec => {
+    checkPage(14 + sec.questions.length * 13);
+
+    // Section header
+    fill('#1a1a1a'); doc.roundedRect(M, y, PW - M*2, 9, 2, 2, 'F');
+    font('bold', 8); tcolor('#2ecc71');
+    txt(sec.short.toUpperCase(), M + 4, y + 6);
+    font('normal', 7); tcolor('#888888');
+    const sc = r.sectionScores.find(x => x.id === sec.id);
+    const secAvg = sc && sc.avg !== null ? `Média: ${sc.avg.toFixed(1)}` : '';
+    txt(secAvg, PW - M - 2, y + 6, {align: 'right'});
+    y += 12;
+
+    sec.questions.forEach((q, qi) => {
+      checkPage(13);
+      const key = `${sec.id.toUpperCase()}-Q${qi + 1}`;
+      const val = r._raw[key] !== undefined ? parseFloat(r._raw[key]) : null;
+      const hex = sHex(val);
+
+      // Question text
+      font('normal', 7); tcolor('#cccccc');
+      const lines = doc.splitTextToSize(`${qi + 1}. ${q}`, PW - M*2 - 22);
+      lines.forEach((line, li) => {
+        checkPage(5);
+        txt(line, M + 3, y + (li * 4.5));
+      });
+      const textH = lines.length * 4.5;
+
+      // Score circle
+      const cx = PW - M - 7, cy = y + textH/2 - 1;
+      fill(hex); doc.circle(cx, cy, 5, 'F');
+      font('bold', 8); tcolor('#000000');
+      txt(val !== null ? String(val) : '—', cx, cy + 2.5, {align: 'center'});
+
+      // Progress bar
+      const barX = M + 3, barY = y + textH + 1;
+      const barW = PW - M*2 - 20;
+      doc.setFillColor(35,35,35); doc.roundedRect(barX, barY, barW, 2.5, 0.8, 0.8, 'F');
+      if (val !== null && val > 0) {
+        fill(hex); doc.roundedRect(barX, barY, (val/10)*barW, 2.5, 0.8, 0.8, 'F');
+      }
+
+      y += textH + 6;
+      qIdx++;
+    });
+
+    y += 3;
+  });
+
+  // Final footer
+  font('normal', 6); tcolor('#555555');
+  txt(`Pág. ${pageNum}`, PW - M, 291, {align: 'right'});
+  fill('#060606'); doc.rect(0, 285, PW, 12, 'F');
+  font('normal', 6.5); tcolor('#555555');
+  txt('Instituto da Liderança · Impact Leader · Diagnóstico Confidencial', PW/2, 291, {align: 'center'});
+
+  const safeName = (r.nome || 'respondente').replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 40);
+  doc.save(`respostas-impact-leader-${safeName}.pdf`);
 }
 
 function exportExcel() {
