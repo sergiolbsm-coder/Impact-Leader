@@ -385,7 +385,7 @@ function renderTable() {
   }
 
   const tbody = rows.map((r, i) => {
-    const score = parseFloat(r.globalAvg || 0);
+    const score = parseFloat(String(r.globalAvg || 0).replace(',','.'));
     const pillClass = score >= 8 ? 'pill-top' : score >= 6 ? 'pill-good' : score >= 4 ? 'pill-att' : 'pill-crit';
     const nClass = r.nivel === 'Avançado' ? 'nv-av' : r.nivel === 'Consolidado' ? 'nv-co' : r.nivel === 'Em desenvolvimento' ? 'nv-em' : 'nv-in';
     const focus = getLowestDim(r);
@@ -429,7 +429,7 @@ function updateSidebar() {
   document.getElementById('st-total').textContent = allData.length;
   if (allData.length === 0) return;
 
-  const media = allData.reduce((a, r) => a + parseFloat(r.globalAvg || 0), 0) / allData.length;
+  const media = allData.reduce((a, r) => a + parseFloat(String(r.globalAvg || 0).replace(',','.')), 0) / allData.length;
   document.getElementById('st-media').textContent = media.toFixed(1) + '/10';
 
   // Find most critical dimension across all respondents
@@ -438,7 +438,7 @@ function updateSidebar() {
   allData.forEach(r => {
     if (r.sectionScores) {
       r.sectionScores.forEach((s, i) => {
-        dimSums[i] += parseFloat(s || 0);
+        dimSums[i] += parseFloat(String(s || 0).replace(',', '.'));
         dimCounts[i]++;
       });
     }
@@ -452,7 +452,7 @@ function getLowestDim(r) {
   if (!r.sectionScores || !r.sectionScores.length) return '—';
   let minVal = 11, minIdx = 0;
   r.sectionScores.forEach((s, i) => {
-    const v = parseFloat(s || 0);
+    const v = parseFloat(String(s || 0).replace(',', '.'));
     if (v < minVal) { minVal = v; minIdx = i; }
   });
   return SECTIONS_SHORT[minIdx] || '—';
@@ -468,7 +468,7 @@ function openModal(idx) {
 
   document.getElementById('m-nome').textContent = r.nome || '—';
   document.getElementById('m-meta').textContent = `${r.prof || ''}  ·  ${r.email || ''}  ·  ${r.data || ''}`;
-  document.getElementById('m-score').textContent = parseFloat(r.globalAvg || 0).toFixed(1) + '/10';
+  document.getElementById('m-score').textContent = parseFloat(String(r.globalAvg || 0).replace(',','.')).toFixed(1) + '/10';
   document.getElementById('m-nivel').textContent = r.nivel || '—';
   document.getElementById('m-foco').textContent = getLowestDim(r);
 
@@ -476,7 +476,7 @@ function openModal(idx) {
   const dims = document.getElementById('m-dims');
   if (r.sectionScores && r.sectionScores.length) {
     dims.innerHTML = r.sectionScores.map((s, i) => {
-      const v = parseFloat(s || 0);
+      const v = parseFloat(String(s || 0).replace(',', '.'));
       const col = v >= 8 ? '#1a6b4a' : v >= 6 ? '#2d9b6f' : v >= 4 ? '#c9a84c' : '#e74c3c';
       return `<div class="md-row">
         <span class="md-name">${SECTIONS_SHORT[i] || 'S'+(i+1)}</span>
@@ -543,7 +543,7 @@ function generatePDF(idx) {
   // Global scores
   doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(14, 31, 23);
   doc.text('RESULTADO GLOBAL', margin, y); y += 8;
-  [['Score Global', parseFloat(r.globalAvg || 0).toFixed(1) + '/10'], ['Nível', r.nivel || '—'], ['Foco', getLowestDim(r)]].forEach((c, i) => {
+  [['Score Global', parseFloat(String(r.globalAvg || 0).replace(',','.')).toFixed(1) + '/10'], ['Nível', r.nivel || '—'], ['Foco', getLowestDim(r)]].forEach((c, i) => {
     const x = margin + i * (usableW / 3);
     doc.setFillColor(26, 107, 74); doc.rect(x, y, usableW / 3 - 4, 18, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(255, 255, 255);
@@ -560,7 +560,7 @@ function generatePDF(idx) {
   const scores = r.sectionScores || [];
   scores.forEach((s, i) => {
     checkPage(20);
-    const v = parseFloat(s || 0);
+    const v = parseFloat(String(s || 0).replace(',', '.'));
     const col = v >= 8 ? [26, 107, 74] : v >= 6 ? [45, 155, 111] : v >= 4 ? [201, 168, 76] : [231, 76, 60];
     const st = v >= 8 ? 'Excelente' : v >= 6 ? 'Bom' : v >= 4 ? 'Atenção' : 'Crítico';
     const num = String(i + 1).padStart(2, '0');
@@ -582,14 +582,14 @@ function generatePDF(idx) {
   doc.text('INSIGHTS PERSONALIZADOS', margin + 4, y + 6);
   y += 14;
 
-  const sorted = [...scores].map((s, i) => ({ s: parseFloat(s || 0), i })).sort((a, b) => a.s - b.s);
+  const sorted = [...scores].map((s, i) => ({ s: parseFloat(String(s || 0).replace(',', '.')), i })).sort((a, b) => a.s - b.s);
   const lowest3 = sorted.slice(0, 3);
   const highest = sorted[sorted.length - 1];
   [
     `Maior força: ${SECTIONS_SHORT[highest?.i || 0]} (${(highest?.s || 0).toFixed(1)}/10) — use como alavanca na liderança.`,
     `Prioridade de desenvolvimento: ${SECTIONS_SHORT[lowest3[0]?.i || 0]} (${(lowest3[0]?.s || 0).toFixed(1)}/10).`,
     `Top 3 dimensões para foco: ${lowest3.map(d => SECTIONS_SHORT[d.i]).join(', ')}.`,
-    `Score ${parseFloat(r.globalAvg || 0).toFixed(1)}/10 = nível ${r.nivel}. A formação irá elevar cada dimensão.`
+    `Score ${parseFloat(String(r.globalAvg || 0).replace(',','.')).toFixed(1)}/10 = nível ${r.nivel}. A formação irá elevar cada dimensão.`
   ].forEach(ins => {
     checkPage(10);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(50, 70, 60);
