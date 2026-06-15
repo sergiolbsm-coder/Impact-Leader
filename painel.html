@@ -261,10 +261,31 @@ function toNum(v) {
   return parseFloat(String(v).replace(',', '.')) || 0;
 }
 
+function resolveNivel(r) {
+  // Se nivel já é texto correto, retorna direto
+  const n = String(r.nivel || '').trim();
+  if (['Avançado','Consolidado','Em desenvolvimento','Iniciante'].includes(n)) return n;
+  // Se nivel é número ou vazio, calcula pelo globalAvg
+  const score = toNum(r.globalAvg);
+  if (score <= 0) return '—';
+  if (score >= 8) return 'Avançado';
+  if (score >= 6) return 'Consolidado';
+  if (score >= 4) return 'Em desenvolvimento';
+  return 'Iniciante';
+}
+
+function nivelClass(nivel) {
+  if (nivel === 'Avançado') return 'nv-av';
+  if (nivel === 'Consolidado') return 'nv-co';
+  if (nivel === 'Em desenvolvimento') return 'nv-em';
+  if (nivel === 'Iniciante') return 'nv-in';
+  return 'nv-co';
+}
+
 function renderTable() {
   const q = (document.getElementById('search')?.value || '').toLowerCase();
   const rows = allData.filter(r => {
-    const matchNivel = activeFilter === 'all' || r.nivel === activeFilter;
+    const matchNivel = activeFilter === 'all' || resolveNivel(r) === activeFilter;
     const matchSearch = !q || (r.nome||'').toLowerCase().includes(q) || (r.prof||'').toLowerCase().includes(q) || (r.empresa||'').toLowerCase().includes(q);
     return matchNivel && matchSearch;
   });
@@ -279,9 +300,10 @@ function renderTable() {
   const tbody = rows.map(r => {
     const score = toNum(r.globalAvg);
     const pillClass = score >= 8 ? 'pill-top' : score >= 6 ? 'pill-good' : score >= 4 ? 'pill-att' : 'pill-crit';
-    const nClass = r.nivel === 'Avançado' ? 'nv-av' : r.nivel === 'Consolidado' ? 'nv-co' : r.nivel === 'Em desenvolvimento' ? 'nv-em' : 'nv-in';
+    const nivel = resolveNivel(r);
+    const nClass = nivelClass(nivel);
     const scoreText = score > 0 ? score.toFixed(1) : '—';
-    const nivelText = r.nivel || '—';
+    const nivelText = nivel;
     const focus = getLowestDim(r);
     const idx = allData.indexOf(r);
     const empresa = r.empresa ? ` · ${r.empresa}` : '';
@@ -373,7 +395,7 @@ function openModal(idx) {
 
   const score = toNum(r.globalAvg);
   document.getElementById('m-score').textContent = score > 0 ? score.toFixed(1) + '/10' : '—';
-  document.getElementById('m-nivel').textContent = r.nivel || '—';
+  document.getElementById('m-nivel').textContent = resolveNivel(r);
   document.getElementById('m-foco').textContent = getLowestDim(r);
 
   const dims = document.getElementById('m-dims');
@@ -451,7 +473,7 @@ async function downloadPDF(idx) {
     doc.text('RESULTADO GLOBAL', margin, y); y += 8;
     [
       ['Score Global', gAvg > 0 ? gAvg.toFixed(1) + '/10' : '—'],
-      ['Nível', r.nivel || '—'],
+      ['Nível', resolveNivel(r)],
       ['Foco', getLowestDim(r)]
     ].forEach((c, i) => {
       const x = margin + i * (usableW / 3);
@@ -499,7 +521,7 @@ async function downloadPDF(idx) {
       hi ? `Maior força: ${SECTIONS_SHORT[hi.i]} (${hi.v.toFixed(1)}/10) — use como alavanca na liderança.` : '',
       lo[0] ? `Prioridade de desenvolvimento: ${SECTIONS_SHORT[lo[0].i]} (${lo[0].v.toFixed(1)}/10).` : '',
       lo.length >= 3 ? `Top 3 dimensões para foco: ${lo.map(d => SECTIONS_SHORT[d.i]).join(', ')}.` : '',
-      gAvg > 0 ? `Score ${gAvg.toFixed(1)}/10 = nível ${r.nivel||'—'}. A formação irá elevar cada dimensão.` : ''
+      gAvg > 0 ? `Score ${gAvg.toFixed(1)}/10 = nível ${resolveNivel(r)}. A formação irá elevar cada dimensão.` : ''
     ].filter(Boolean);
 
     insights.forEach(ins => {
