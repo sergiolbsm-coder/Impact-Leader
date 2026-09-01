@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Impact Leader — Instituto da Liderança</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1a6b4a;--gl:#2d9b6f;--gp:#e8f5ef;--gold:#c9a84c;--dark:#0e1f17;--dark2:#1a2e23;--text:#1c2b22;--t2:#4a6355;--t3:#7a9585;--border:#d4e6db;--bg:#f7fbf8;--white:#fff;--r:12px;--rl:20px;--sh:0 2px 16px rgba(26,107,74,.08);--red:#e74c3c;--amber:#c9a84c;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.hdr{background:var(--dark);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr-logo{font-family:'Playfair Display',serif;color:#fff;font-size:17px;font-weight:600;}
+.hdr-logo span{color:var(--gold);}
+.hdr-right{display:flex;align-items:center;gap:16px;}
+.hdr-badge{font-size:11px;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;}
+.sync-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.sync-btn:hover{background:rgba(201,168,76,.25);}
+.layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 60px);}
+.sidebar{background:var(--dark2);border-right:1px solid rgba(255,255,255,.06);padding:24px 0;}
+.sb-section{padding:0 20px;margin-bottom:28px;}
+.sb-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:10px;padding:0 4px;}
+.sb-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;}
+.sb-stat-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gold);display:block;}
+.sb-stat-lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
+.sb-divider{height:1px;background:rgba(255,255,255,.06);margin:0 20px 20px;}
+.filter-wrap{padding:0 20px;}
+.filter-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:8px;}
+.filter-btn{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:8px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;margin-bottom:4px;}
+.filter-btn:hover{background:rgba(255,255,255,.06);color:#fff;}
+.filter-btn.active{background:rgba(26,107,74,.3);color:#fff;font-weight:500;}
+.filter-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;}
+.dot-all{background:var(--t3);}.dot-top{background:var(--green);}.dot-good{background:var(--gl);}.dot-att{background:var(--amber);}.dot-crit{background:var(--red);}
+.main{padding:32px 36px;}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+.page-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);flex:1;}
+.search-wrap{position:relative;}
+.search-input{padding:9px 14px 9px 36px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;width:220px;transition:border-color .2s;}
+.search-input:focus{border-color:var(--green);}
+.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--t3);}
+.export-all-btn{background:var(--green);color:#fff;border:none;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap;}
+.export-all-btn:hover{background:var(--gl);}
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;}
+.table-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-size:14px;font-weight:600;color:var(--text);}
+.table-count{font-size:12px;color:var(--t3);background:var(--bg);padding:3px 10px;border-radius:20px;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);padding:12px 16px;text-align:left;background:var(--bg);border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--gp);}
+tbody td{padding:14px 16px;font-size:13px;color:var(--text);}
+.td-name{font-weight:600;}
+.td-sub{color:var(--t2);font-size:12px;margin-top:2px;}
+.score-pill{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:'Playfair Display',serif;}
+.pill-top{background:#e8f5ef;color:var(--green);}.pill-good{background:#d4f0e4;color:var(--gl);}.pill-att{background:#fdf3e0;color:#a07820;}.pill-crit{background:#fdecea;color:var(--red);}
+.nivel-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;}
+.nv-av{background:#e8f5ef;color:var(--green);}.nv-co{background:#d4f0e4;color:var(--gl);}.nv-em{background:#fdf3e0;color:#a07820;}.nv-in{background:#fdecea;color:var(--red);}
+.actions-td{display:flex;gap:6px;align-items:center;}
+.btn-pdf{background:var(--gold);color:var(--dark);border:none;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
+.btn-pdf:hover{background:#b8943d;}
+.btn-view{background:var(--gp);color:var(--green);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
+.btn-view:hover{background:var(--green);color:#fff;}
+.empty-state{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:40px;margin-bottom:16px;opacity:.4;}
+.empty-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--text);margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--t2);line-height:1.7;max-width:400px;margin:0 auto;}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(14,31,23,.8);z-index:200;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--white);border-radius:var(--rl);width:100%;max-width:700px;margin:auto;}
+.modal-head{background:var(--dark);border-radius:var(--rl) var(--rl) 0 0;padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;}
+.modal-name{font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:4px;}
+.modal-meta{font-size:12px;color:rgba(255,255,255,.45);}
+.modal-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-close:hover{background:rgba(255,255,255,.2);}
+.modal-body{padding:24px 28px;}
+.modal-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.ms-card{background:var(--bg);border-radius:var(--r);padding:14px;text-align:center;}
+.ms-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green);}
+.ms-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.modal-dims{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.md-row{display:flex;align-items:center;gap:10px;}
+.md-name{font-size:12px;color:var(--t2);width:130px;flex-shrink:0;}
+.md-bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.md-bar-fill{height:100%;border-radius:4px;}
+.md-val{font-size:12px;font-weight:700;color:var(--text);width:26px;text-align:right;flex-shrink:0;}
+.modal-actions{display:flex;gap:10px;}
+.modal-pdf-btn{flex:1;padding:12px;background:var(--gold);color:var(--dark);border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.modal-pdf-btn:hover{background:#b8943d;}
+.modal-close-btn{padding:12px 20px;background:transparent;color:var(--t2);border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.modal-close-btn:hover{background:var(--bg);}
+.loading{text-align:center;padding:40px;color:var(--t3);font-size:14px;}
+.spin{display:inline-block;width:24px;height:24px;border:2.5px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin-right:10px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:500;transform:translateY(80px);opacity:0;transition:all .3s;box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--red);}
+
+/* NaN fix banner */
+.info-banner{background:#fff8e1;border:1px solid #ffe082;border-radius:var(--r);padding:14px 18px;margin-bottom:20px;font-size:13px;color:#5d4037;display:none;}
+.info-banner.show{display:block;}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-head">
+      <div><div class="modal-name" id="m-nome">—</div><div class="modal-meta" id="m-meta">—</div></div>
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-scores">
+        <div class="ms-card"><div class="ms-val" id="m-score">—</div><div class="ms-lbl">Score Global</div></div>
+        <div class="ms-card"><div class="ms-val" id="m-nivel">—</div><div class="ms-lbl">Nível</div></div>
+        <div class="ms-card"><div class="ms-val" id="m-foco">—</div><div class="ms-lbl">Foco Prioritário</div></div>
+      </div>
+      <div class="modal-dims" id="m-dims"></div>
+      <div class="modal-actions">
+        <button class="modal-pdf-btn" onclick="pdfModal()">⬇ Baixar PDF</button>
+        <button class="modal-close-btn" onclick="closeModalBtn()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="hdr">
+  <div class="hdr-logo">Instituto da <span>Liderança</span></div>
+  <div class="hdr-right">
+    <span class="hdr-badge">Painel Impact Leader</span>
+    <button class="sync-btn" onclick="loadData()">↻ Sincronizar</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">Resumo da Turma</div>
+      <div class="sb-stat"><span class="sb-stat-val" id="st-total">0</span><div class="sb-stat-lbl">Respondentes</div></div>
+      <div class="sb-stat"><span class="sb-stat-val" id="st-media">—</span><div class="sb-stat-lbl">Média geral da turma</div></div>
+      <div class="sb-stat"><span class="sb-stat-val" id="st-dim">—</span><div class="sb-stat-lbl">Dimensão mais crítica</div></div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="filter-wrap">
+      <div class="filter-label">Filtrar por nível</div>
+      <button class="filter-btn active" onclick="setFilter('all',this)"><span class="filter-dot dot-all"></span>Todos</button>
+      <button class="filter-btn" onclick="setFilter('Avançado',this)"><span class="filter-dot dot-top"></span>Avançado</button>
+      <button class="filter-btn" onclick="setFilter('Consolidado',this)"><span class="filter-dot dot-good"></span>Consolidado</button>
+      <button class="filter-btn" onclick="setFilter('Em desenvolvimento',this)"><span class="filter-dot dot-att"></span>Em desenvolvimento</button>
+      <button class="filter-btn" onclick="setFilter('Iniciante',this)"><span class="filter-dot dot-crit"></span>Iniciante</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="info-banner" id="info-banner"></div>
+    <div class="topbar">
+      <div class="page-title">Respondentes</div>
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input class="search-input" id="search" placeholder="Buscar por nome..." oninput="renderTable()" />
+      </div>
+      <button class="export-all-btn" onclick="exportAll()">⬇ Exportar todos em PDF</button>
+    </div>
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Worklist de Respondentes</span>
+        <span class="table-count" id="tbl-count">0 registros</span>
+      </div>
+      <div id="table-wrap">
+        <div class="loading"><span class="spin"></span>Carregando respondentes...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbxPR0HhC3HMnCOdg-raRbmQaQoVmubTieqOn68Fq4kA_6PHc6p3IRif1iEtWetvZGDysQ/exec';
+
+const SECTIONS_SHORT = [
+  'Objetivos','Estratégias','Execução','Resultados','Bloqueios',
+  'Tempo','Int. Emocional','Relacionamentos','Comunicação','Assertividade',
+  'Energia','Decisões','Financeiro','Proatividade','Conflitos'
+];
+
+let allData = [];
+let activeFilter = 'all';
+let currentRecord = null;
+let jsPDFLoaded = false;
+
+// ============================================================
+// LOAD jsPDF dinamicamente
+// ============================================================
+function loadJsPDF() {
+  return new Promise((resolve) => {
+    if (window.jspdf && window.jspdf.jsPDF) { resolve(true); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => { resolve(true); };
+    s.onerror = () => { resolve(false); };
+    document.head.appendChild(s);
+  });
+}
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadData() {
+  document.getElementById('table-wrap').innerHTML = '<div class="loading"><span class="spin"></span>Carregando respondentes...</div>';
+  try {
+    const resp = await fetch(API_URL + '?action=list', { method: 'GET' });
+    const data = await resp.json();
+    if (data.status === 'ok' && Array.isArray(data.rows)) {
+      allData = data.rows;
+      renderTable();
+      updateSidebar();
+      toast(allData.length + ' respondentes carregados', 'success');
+
+      // Verificar se scores estão chegando
+      const sample = allData[0];
+      if (sample && (!sample.globalAvg || sample.globalAvg === '')) {
+        showBanner('⚠️ Os scores (Score Global, Nível e Dimensões) não estão chegando da planilha. Certifique-se de que o Apps Script v5 foi implantado como <strong>Nova versão</strong> e não apenas salvo.');
+      }
+    } else {
+      showEmpty('Nenhum dado retornado. Verifique o Apps Script.');
+    }
+  } catch(err) {
+    showEmpty('Erro ao conectar. Verifique se o Apps Script está publicado corretamente.');
+    toast('Erro de conexão', 'error');
+  }
+}
+
+function showBanner(msg) {
+  const b = document.getElementById('info-banner');
+  b.innerHTML = msg;
+  b.classList.add('show');
+}
+
+function showEmpty(msg) {
+  document.getElementById('table-wrap').innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Sem dados</div><div class="empty-sub">${msg}</div></div>`;
+}
+
+// ============================================================
+// FILTER & RENDER
+// ============================================================
+function setFilter(nivel, btn) {
+  activeFilter = nivel;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function toNum(v) {
+  if (v === undefined || v === null || v === '') return 0;
+  return parseFloat(String(v).replace(',', '.')) || 0;
+}
+
+function resolveNivel(r) {
+  // Se nivel já é texto correto, retorna direto
+  const n = String(r.nivel || '').trim();
+  if (['Avançado','Consolidado','Em desenvolvimento','Iniciante'].includes(n)) return n;
+  // Se nivel é número ou vazio, calcula pelo globalAvg
+  const score = toNum(r.globalAvg);
+  if (score <= 0) return '—';
+  if (score >= 8) return 'Avançado';
+  if (score >= 6) return 'Consolidado';
+  if (score >= 4) return 'Em desenvolvimento';
+  return 'Iniciante';
+}
+
+function nivelClass(nivel) {
+  if (nivel === 'Avançado') return 'nv-av';
+  if (nivel === 'Consolidado') return 'nv-co';
+  if (nivel === 'Em desenvolvimento') return 'nv-em';
+  if (nivel === 'Iniciante') return 'nv-in';
+  return 'nv-co';
+}
+
+function renderTable() {
+  const q = (document.getElementById('search')?.value || '').toLowerCase();
+  const rows = allData.filter(r => {
+    const matchNivel = activeFilter === 'all' || resolveNivel(r) === activeFilter;
+    const matchSearch = !q || (r.nome||'').toLowerCase().includes(q) || (r.prof||'').toLowerCase().includes(q) || (r.empresa||'').toLowerCase().includes(q);
+    return matchNivel && matchSearch;
+  });
+
+  document.getElementById('tbl-count').textContent = rows.length + ' registro' + (rows.length !== 1 ? 's' : '');
+
+  if (rows.length === 0) {
+    document.getElementById('table-wrap').innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Nenhum resultado</div><div class="empty-sub">Tente ajustar os filtros ou o termo de busca.</div></div>`;
+    return;
+  }
+
+  const tbody = rows.map(r => {
+    const score = toNum(r.globalAvg);
+    const pillClass = score >= 8 ? 'pill-top' : score >= 6 ? 'pill-good' : score >= 4 ? 'pill-att' : 'pill-crit';
+    const nivel = resolveNivel(r);
+    const nClass = nivelClass(nivel);
+    const scoreText = score > 0 ? score.toFixed(1) : '—';
+    const nivelText = nivel;
+    const focus = getLowestDim(r);
+    const idx = allData.indexOf(r);
+    const empresa = r.empresa ? ` · ${r.empresa}` : '';
+    return `<tr onclick="openModal(${idx})">
+      <td><div class="td-name">${r.nome||'—'}</div><div class="td-sub">${r.prof||'—'}${empresa}</div></td>
+      <td><div class="td-sub">${r.email||'—'}</div></td>
+      <td><span class="score-pill ${pillClass}">${scoreText}</span></td>
+      <td><span class="nivel-badge ${nClass}">${nivelText}</span></td>
+      <td style="color:var(--t2);font-size:12px;">${focus}</td>
+      <td style="color:var(--t3);font-size:12px;">${formatDate(r.data)}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="actions-td">
+          <button class="btn-view" onclick="openModal(${idx})">Ver</button>
+          <button class="btn-pdf" onclick="downloadPDF(${idx})">PDF</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-wrap').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Participante</th><th>E-mail</th><th>Score</th><th>Nível</th><th>Foco Prioritário</th><th>Data</th><th>Ações</th>
+      </tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>`;
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  // Remove GMT timezone text for cleaner display
+  const s = String(d);
+  if (s.includes('/')) return s.substring(0, 10);
+  try {
+    const dt = new Date(s);
+    if (!isNaN(dt)) return dt.toLocaleDateString('pt-BR');
+  } catch(e) {}
+  return s.substring(0, 16);
+}
+
+function getLowestDim(r) {
+  if (!r.sectionScores || !r.sectionScores.length) return '—';
+  let minVal = 11, minIdx = 0;
+  r.sectionScores.forEach((s, i) => {
+    const v = toNum(s);
+    if (v > 0 && v < minVal) { minVal = v; minIdx = i; }
+  });
+  return SECTIONS_SHORT[minIdx] || '—';
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function updateSidebar() {
+  document.getElementById('st-total').textContent = allData.length;
+  if (!allData.length) return;
+
+  const scores = allData.map(r => toNum(r.globalAvg)).filter(v => v > 0);
+  if (scores.length) {
+    const media = scores.reduce((a,b)=>a+b,0) / scores.length;
+    document.getElementById('st-media').textContent = media.toFixed(1) + '/10';
+  } else {
+    document.getElementById('st-media').textContent = '—';
+  }
+
+  // Dimensão mais crítica
+  const dimSums = Array(15).fill(0), dimCounts = Array(15).fill(0);
+  allData.forEach(r => {
+    if (r.sectionScores) r.sectionScores.forEach((s, i) => {
+      const v = toNum(s);
+      if (v > 0) { dimSums[i] += v; dimCounts[i]++; }
+    });
+  });
+  const dimAvgs = dimSums.map((s, i) => dimCounts[i] ? s / dimCounts[i] : 10);
+  const minIdx = dimAvgs.indexOf(Math.min(...dimAvgs));
+  document.getElementById('st-dim').textContent = SECTIONS_SHORT[minIdx] || '—';
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(idx) {
+  const r = allData[idx];
+  if (!r) return;
+  currentRecord = { ...r, _idx: idx };
+
+  document.getElementById('m-nome').textContent = r.nome || '—';
+  document.getElementById('m-meta').textContent = `${r.prof||''}${r.empresa ? ' · ' + r.empresa : ''}  ·  ${r.email||''}  ·  ${formatDate(r.data)}`;
+
+  const score = toNum(r.globalAvg);
+  document.getElementById('m-score').textContent = score > 0 ? score.toFixed(1) + '/10' : '—';
+  document.getElementById('m-nivel').textContent = resolveNivel(r);
+  document.getElementById('m-foco').textContent = getLowestDim(r);
+
+  const dims = document.getElementById('m-dims');
+  if (r.sectionScores && r.sectionScores.length) {
+    dims.innerHTML = r.sectionScores.map((s, i) => {
+      const v = toNum(s);
+      const col = v >= 8 ? '#1a6b4a' : v >= 6 ? '#2d9b6f' : v >= 4 ? '#c9a84c' : '#e74c3c';
+      return `<div class="md-row">
+        <span class="md-name">${SECTIONS_SHORT[i]||'S'+(i+1)}</span>
+        <div class="md-bar-track"><div class="md-bar-fill" style="width:${v*10}%;background:${col}"></div></div>
+        <span class="md-val" style="color:${col}">${v > 0 ? v.toFixed(1) : '—'}</span>
+      </div>`;
+    }).join('');
+  } else {
+    dims.innerHTML = '<p style="font-size:13px;color:var(--t3);">Dados de dimensões não disponíveis.</p>';
+  }
+
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) { if (e.target === document.getElementById('modal')) closeModalBtn(); }
+function closeModalBtn() {
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+  currentRecord = null;
+}
+function pdfModal() { if (currentRecord) downloadPDF(currentRecord._idx); }
+
+// ============================================================
+// PDF GENERATION
+// ============================================================
+async function downloadPDF(idx) {
+  const r = allData[idx];
+  if (!r) return;
+
+  toast('Gerando PDF...', 'success');
+
+  const loaded = await loadJsPDF();
+  if (!loaded || !window.jspdf || !window.jspdf.jsPDF) {
+    toast('Erro ao carregar biblioteca PDF. Tente novamente.', 'error');
+    return;
+  }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const margin = 18, usableW = 210 - margin * 2;
+    let y = 0;
+
+    function checkPage(n) { if (y + n > 270) { doc.addPage(); y = 20; } }
+
+    // Header
+    doc.setFillColor(14, 31, 23); doc.rect(0, 0, 210, 40, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(201, 168, 76);
+    doc.text('Instituto da Liderança', margin, 16);
+    doc.setFontSize(11); doc.setTextColor(255, 255, 255);
+    doc.text('Formação Impact Leader — Diagnóstico Individual', margin, 25);
+    doc.setFontSize(9); doc.setTextColor(160, 190, 175);
+    doc.text(`${r.nome||''}  ·  ${r.prof||''}  ·  ${formatDate(r.data)}`, margin, 33);
+    y = 52;
+
+    // Identity
+    doc.setFillColor(232, 245, 239); doc.rect(margin, y - 4, usableW, 24, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(26, 107, 74);
+    doc.text('PARTICIPANTE', margin + 4, y + 2);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(30, 43, 34);
+    doc.text(`${r.nome||''}${r.empresa ? '  ·  ' + r.empresa : ''}`, margin + 4, y + 9);
+    doc.text(`${r.prof||''}  |  ${r.email||''}`, margin + 4, y + 15);
+    y += 32;
+
+    // Global scores
+    const gAvg = toNum(r.globalAvg);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(14, 31, 23);
+    doc.text('RESULTADO GLOBAL', margin, y); y += 8;
+    [
+      ['Score Global', gAvg > 0 ? gAvg.toFixed(1) + '/10' : '—'],
+      ['Nível', resolveNivel(r)],
+      ['Foco', getLowestDim(r)]
+    ].forEach((c, i) => {
+      const x = margin + i * (usableW / 3);
+      doc.setFillColor(26, 107, 74); doc.rect(x, y, usableW / 3 - 4, 18, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(255, 255, 255);
+      doc.text(c[1], x + (usableW / 3 - 4) / 2, y + 8, { align: 'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(180, 230, 210);
+      doc.text(c[0], x + (usableW / 3 - 4) / 2, y + 14, { align: 'center' });
+    });
+    y += 28;
+
+    // Dimensions
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(14, 31, 23);
+    doc.text('DIAGNÓSTICO POR DIMENSÃO', margin, y); y += 8;
+
+    const scores = r.sectionScores || [];
+    scores.forEach((s, i) => {
+      checkPage(20);
+      const v = toNum(s);
+      const col = v >= 8 ? [26,107,74] : v >= 6 ? [45,155,111] : v >= 4 ? [201,168,76] : [231,76,60];
+      const st = v >= 8 ? 'Excelente' : v >= 6 ? 'Bom' : v >= 4 ? 'Atenção' : 'Crítico';
+      const num = String(i + 1).padStart(2, '0');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(30, 43, 34);
+      doc.text(`${num}. ${SECTIONS_SHORT[i]||''}`, margin, y + 4);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(col[0], col[1], col[2]);
+      doc.text(st, margin + 55, y + 4);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(col[0], col[1], col[2]);
+      doc.text(v > 0 ? v.toFixed(1) : '—', margin + usableW, y + 4, { align: 'right' });
+      doc.setFillColor(220, 235, 227); doc.rect(margin, y + 6, usableW * 0.65, 5, 'F');
+      if (v > 0) { doc.setFillColor(col[0], col[1], col[2]); doc.rect(margin, y + 6, usableW * 0.65 * (v / 10), 5, 'F'); }
+      y += 18;
+    });
+
+    // Insights
+    checkPage(55);
+    doc.setFillColor(14, 31, 23); doc.rect(margin, y, usableW, 9, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(201, 168, 76);
+    doc.text('INSIGHTS PERSONALIZADOS', margin + 4, y + 6);
+    y += 15;
+
+    const sorted = [...scores].map((s, i) => ({ v: toNum(s), i })).filter(x => x.v > 0).sort((a, b) => a.v - b.v);
+    const lo = sorted.slice(0, 3);
+    const hi = sorted[sorted.length - 1];
+    const insights = [
+      hi ? `Maior força: ${SECTIONS_SHORT[hi.i]} (${hi.v.toFixed(1)}/10) — use como alavanca na liderança.` : '',
+      lo[0] ? `Prioridade de desenvolvimento: ${SECTIONS_SHORT[lo[0].i]} (${lo[0].v.toFixed(1)}/10).` : '',
+      lo.length >= 3 ? `Top 3 dimensões para foco: ${lo.map(d => SECTIONS_SHORT[d.i]).join(', ')}.` : '',
+      gAvg > 0 ? `Score ${gAvg.toFixed(1)}/10 = nível ${resolveNivel(r)}. A formação irá elevar cada dimensão.` : ''
+    ].filter(Boolean);
+
+    insights.forEach(ins => {
+      checkPage(10);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(50, 70, 60);
+      doc.text('→ ' + ins, margin + 3, y); y += 8;
+    });
+
+    // Footer
+    for (let p = 1; p <= doc.getNumberOfPages(); p++) {
+      doc.setPage(p);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(150, 170, 160);
+      doc.text(`Instituto da Liderança · Formação Impact Leader · Página ${p} de ${doc.getNumberOfPages()}`, 105, 290, { align: 'center' });
+    }
+
+    const fname = `diagnostico-${(r.nome||'participante').split(' ')[0].toLowerCase()}.pdf`;
+    doc.save(fname);
+    toast(`PDF de ${r.nome?.split(' ')[0]} salvo!`, 'success');
+  } catch(err) {
+    toast('Erro ao gerar PDF: ' + err.message, 'error');
+    console.error(err);
+  }
+}
+
+async function exportAll() {
+  if (!allData.length) { toast('Nenhum respondente para exportar', 'error'); return; }
+  toast(`Gerando ${allData.length} PDFs...`, 'success');
+  for (let i = 0; i < allData.length; i++) {
+    await new Promise(r => setTimeout(r, 400));
+    await downloadPDF(i);
+  }
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = () => {
+  loadJsPDF(); // pré-carrega
+  loadData();
+};
+</script>
+</body>
+</html>
